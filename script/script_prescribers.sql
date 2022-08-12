@@ -4,7 +4,7 @@ FROM prescriber as p1
 LEFT JOIN prescription as p2 USING(npi)
 WHERE p2.total_claim_count IS NOT NULL
 ORDER BY p2.total_claim_count DESC;
--- Answer: Highest claim count is 4,538
+-- Answer: Highest claim count is 4,538.
 
 -- Q1b.
 SELECT 
@@ -17,3 +17,24 @@ LEFT JOIN prescription as p2 USING(npi)
 WHERE p2.total_claim_count IS NOT NULL
 ORDER BY p2.total_claim_count DESC;
 -- Answer: David Coffey, specialty being family practice.
+
+-- Q2a.
+SELECT DISTINCT p1.specialty_description AS specailty, SUM(p2.total_claim_count) AS total
+FROM prescriber as p1
+LEFT JOIN prescription as p2 USING(npi)
+WHERE p2.total_claim_count IS NOT NULL
+GROUP BY specailty
+ORDER BY total DESC;
+-- Answer: Family Practice, 9,752,347.
+
+-- Q2b.
+SELECT DISTINCT p1.specialty_description AS specailty, SUM(p2.total_claim_count) AS total
+FROM prescriber as p1
+LEFT JOIN prescription as p2 USING(npi)
+LEFT JOIN drug as d1 USING(drug_name)
+WHERE p2.total_claim_count IS NOT NULL AND d1.opioid_drug_flag = 'Y'
+GROUP BY specailty
+ORDER BY total DESC;
+-- Answer: Nurse Practitioner, 900,845.
+
+
