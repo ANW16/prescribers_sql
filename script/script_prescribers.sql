@@ -37,4 +37,15 @@ GROUP BY specailty
 ORDER BY total DESC;
 -- Answer: Nurse Practitioner, 900,845.
 
-
+-- Q2c.
+SELECT DISTINCT p1.specialty_description AS specailty
+FROM prescriber as p1
+LEFT JOIN prescription as p2 USING(npi)
+WHERE p1.specialty_description NOT IN 
+    (SELECT DISTINCT p1.specialty_description AS specailty
+    FROM prescriber as p1
+    LEFT JOIN prescription as p2 USING(npi)
+    WHERE p2.total_claim_count IS NOT NULL
+    GROUP BY specailty)
+GROUP BY specailty;
+-- Answer: Yes, 15 specialties. 
