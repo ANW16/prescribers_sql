@@ -159,3 +159,22 @@ ORDER BY p2.total_claim_count DESC;
 -- Answer: It works .
 
 -- Q7a.
+SELECT d1.drug_name, p1.npi
+FROM prescriber AS p1
+CROSS JOIN drug AS d1
+WHERE specialty_description ILIKE '%Pain Management%' AND
+nppes_provider_city ILIKE '%NASHVILLE%' AND
+d1.opioid_drug_flag = 'Y'
+ORDER BY d1.drug_name ASC;
+-- Answer: It works .
+
+-- Q7b.
+SELECT d1.drug_name, p1.npi, p2.total_claim_count
+FROM prescriber AS p1
+CROSS JOIN drug AS d1
+LEFT JOIN prescription as p2 USING(npi)
+WHERE specialty_description ILIKE '%Pain Management%' AND
+nppes_provider_city ILIKE '%NASHVILLE%' AND
+d1.opioid_drug_flag = 'Y'
+GROUP BY d1.drug_name, p1.npi
+ORDER BY d1.drug_name ASC;
