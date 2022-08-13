@@ -92,10 +92,24 @@ CASE
     WHEN d1.opioid_drug_flag = 'Y' THEN 'Opioid'
     WHEN d1.antibiotic_drug_flag = 'Y' THEN 'Antibiotic'
     ELSE 'Neither' 
-END AS drug_type, SUM(p2.total_drug_cost) AS money
+END AS drug_type, MONEY(SUM(p2.total_drug_cost)) AS total_cost
 FROM drug as d1
 LEFT JOIN prescription as p2 USING(drug_name)
 GROUP BY drug_type
-ORDER BY money DESC;
--- Answer: Opioids - $105,080,626.37 > Antibiotics - $38,435,121.26
+ORDER BY total_cost DESC;
+-- Answer: Opioids - $105,080,626.37 > Antibiotics - $38,435,121.26 .
 
+-- Q5a.
+SELECT DISTINCT cbsa, cbsaname
+FROM cbsa
+WHERE cbsaname LIKE '%TN%';
+-- Answer: 10 CBSAs in TN .
+
+-- Q5b
+SELECT cbsaname, SUM(population) as total_pop
+FROM cbsa as c1
+LEFT JOIN population as p3 USING(fipscounty)
+WHERE population IS NOT NULL
+GROUP BY cbsaname
+ORDER BY total_pop DESC;
+-- Answer: MAX - Nashville-Davidson--Murfreesboro--Franklin, 1,830,410. MIN - Morristown, 116,352 .
