@@ -105,7 +105,7 @@ FROM cbsa
 WHERE cbsaname LIKE '%TN%';
 -- Answer: 10 CBSAs in TN .
 
--- Q5b
+-- Q5b.
 SELECT cbsaname, SUM(population) as total_pop
 FROM cbsa as c1
 LEFT JOIN population as p3 USING(fipscounty)
@@ -113,3 +113,49 @@ WHERE population IS NOT NULL
 GROUP BY cbsaname
 ORDER BY total_pop DESC;
 -- Answer: MAX - Nashville-Davidson--Murfreesboro--Franklin, 1,830,410. MIN - Morristown, 116,352 .
+
+-- Q5c.
+SELECT f1.county, p3.population
+FROM population as p3
+LEFT JOIN fips_county as f1 USING(fipscounty)
+WHERE p3.fipscounty NOT IN 
+    (SELECT p3.fipscounty
+    FROM cbsa as c1
+    LEFT JOIN population as p3 USING(fipscounty)
+    WHERE p3.fipscounty IS NOT NULL)
+ORDER BY p3.population DESC;
+-- Answer: Sevier, 95,523 .
+
+-- Q6a.
+SELECT drug_name, total_claim_count
+FROM prescription
+WHERE total_claim_count >= 3000
+ORDER BY total_claim_count DESC;
+-- Answer: It works .
+
+-- Q6b.
+SELECT p2.drug_name, p2.total_claim_count, 
+CASE
+    WHEN d1.opioid_drug_flag = 'Y' THEN 'Y'
+    ELSE 'N' 
+END AS is_opioid
+FROM prescription as p2
+LEFT JOIN drug as d1 USING(drug_name)
+WHERE p2.total_claim_count >= 3000
+ORDER BY p2.total_claim_count DESC;
+-- Answer: 2 opioids and 7 others .
+
+-- Q6c.
+SELECT p1.nppes_provider_last_org_name as last_name, p1.nppes_provider_first_name as first_name, p2.drug_name, p2.total_claim_count, 
+CASE
+    WHEN d1.opioid_drug_flag = 'Y' THEN 'Y'
+    ELSE 'N' 
+END AS is_opioid
+FROM prescription as p2
+LEFT JOIN drug as d1 USING(drug_name)
+LEFT JOIN prescriber as p1 USING(npi)
+WHERE p2.total_claim_count >= 3000
+ORDER BY p2.total_claim_count DESC;
+-- Answer: It works .
+
+-- Q7a.
