@@ -172,9 +172,24 @@ ORDER BY d1.drug_name ASC;
 SELECT d1.drug_name, p1.npi, p2.total_claim_count
 FROM prescriber AS p1
 CROSS JOIN drug AS d1
-LEFT JOIN prescription as p2 USING(npi)
+LEFT JOIN prescription as p2 ON p2.npi = p1.npi
+AND d1.drug_name = p2.drug_name
 WHERE specialty_description ILIKE '%Pain Management%' AND
 nppes_provider_city ILIKE '%NASHVILLE%' AND
 d1.opioid_drug_flag = 'Y'
-GROUP BY d1.drug_name, p1.npi
-ORDER BY d1.drug_name ASC;
+GROUP BY d1.drug_name, p1.npi, p2.total_claim_count
+ORDER BY p2.total_claim_count ASC;
+-- Answer: It works . 
+
+-- Q7c.
+SELECT d1.drug_name, p1.npi, COALESCE(p2.total_claim_count,0)
+FROM prescriber AS p1
+CROSS JOIN drug AS d1
+LEFT JOIN prescription as p2 ON p2.npi = p1.npi
+AND d1.drug_name = p2.drug_name
+WHERE specialty_description ILIKE '%Pain Management%' AND
+nppes_provider_city ILIKE '%NASHVILLE%' AND
+d1.opioid_drug_flag = 'Y'
+GROUP BY d1.drug_name, p1.npi, p2.total_claim_count
+ORDER BY p2.total_claim_count ASC;
+-- Answer: It works .
